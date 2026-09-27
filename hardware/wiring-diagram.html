@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Protein Dispenser &mdash; System Wiring Diagram (Deliverable A)</title>
+<style>
+  :root{--bg:#0e1116;--panel:#161b23;--line:#28303d;--txt:#e6edf3;--dim:#8b98a8;
+    --ac:#38bdf8;--ok:#34d399;--hot:#fb923c;--cold:#60a5fa;--mains:#f87171;--dc12:#fbbf24;--dc24:#a78bfa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:13px/1.5 ui-monospace,Menlo,Consolas,monospace}
+  header{padding:14px 20px;border-bottom:1px solid var(--line);background:#11161d;position:sticky;top:0;z-index:10}
+  h1{margin:0;font-size:16px}
+  h1 span{color:var(--dim);font-weight:400;font-size:12px}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:11px}
+  .lg{display:flex;align-items:center;gap:6px;color:var(--dim)}
+  .sw{width:22px;height:3px;border-radius:2px}
+  .wrap{padding:14px 20px}
+  svg{width:100%;height:auto;background:#0b0f14;border:1px solid var(--line);border-radius:10px}
+  .tbl{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:11px}
+  th,td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:left}
+  th{color:var(--ac);text-transform:uppercase;font-size:10px;letter-spacing:.06em}
+  td:first-child{color:var(--ok);white-space:nowrap}
+  .warn{color:var(--mains);font-weight:600}
+  footer{padding:14px 20px;color:var(--dim);font-size:10px;text-align:center;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Protein Dispenser &mdash; System Wiring Diagram <span>&middot; Deliverable A &middot; box-level, rebuildable from off-the-shelf parts</span></h1>
+  <div class="legend">
+    <div class="lg"><span class="sw" style="background:var(--mains)"></span>230 V AC mains</div>
+    <div class="lg"><span class="sw" style="background:var(--dc12)"></span>12 V DC (LRS-100-12)</div>
+    <div class="lg"><span class="sw" style="background:var(--dc24)"></span>24 V DC (LRS-100-24)</div>
+    <div class="lg"><span class="sw" style="background:var(--ac)"></span>signal / bus</div>
+    <div class="lg"><span class="sw" style="background:var(--hot)"></span>hot water path</div>
+    <div class="lg"><span class="sw" style="background:var(--cold)"></span>cold water path</div>
+    <div class="lg">&#9432; solid = power, dashed = signal, thick = mains</div>
+  </div>
+</header>
+
+<div class="wrap">
+<!-- ============================ SVG ============================ -->
+<svg viewBox="0 0 1240 900" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace,Menlo,monospace" font-size="11">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 z" fill="#8b98a8"/>
+    </marker>
+  </defs>
+
+  <!-- ---------- MAINS IN ---------- -->
+  <g>
+    <rect x="30" y="40" width="120" height="70" rx="8" fill="#1c2330" stroke="#f87171" stroke-width="2"/>
+    <text x="90" y="68" text-anchor="middle" fill="#f87171" font-weight="700">230 V AC</text>
+    <text x="90" y="84" text-anchor="middle" fill="#8b98a8" font-size="9">IEC inlet + fuse</text>
+    <text x="90" y="97" text-anchor="middle" fill="#8b98a8" font-size="9">+ main switch</text>
+  </g>
+
+  <!-- mains bus -->
+  <path d="M150 75 H 205" stroke="#f87171" stroke-width="3" fill="none"/>
+  <path d="M205 75 V 780" stroke="#f87171" stroke-width="3" fill="none"/>
+  <path d="M205 150 H 300" stroke="#f87171" stroke-width="3" fill="none"/>
+  <path d="M205 250 H 300" stroke="#f87171" stroke-width="3" fill="none"/>
+  <path d="M205 300 H 640" stroke="#f87171" stroke-width="3" fill="none"/>
+  <path d="M205 780 H 620" stroke="#f87171" stroke-width="3" fill="none"/>
+  <text x="212" y="740" fill="#f87171" font-size="10" transform="rotate(-90 212 740)">L (line)</text>
+
+  <!-- ---------- PSU 12 ---------- -->
+  <g>
+    <rect x="300" y="120" width="180" height="62" rx="8" fill="#1c2330" stroke="#fbbf24" stroke-width="2"/>
+    <text x="390" y="145" text-anchor="middle" fill="#fbbf24" font-weight="700">Mean Well LRS-100-12</text>
+    <text x="390" y="161" text-anchor="middle" fill="#8b98a8" font-size="9">100 W &middot; 12 V / 8.5 A</text>
+    <text x="390" y="175" text-anchor="middle" fill="#8b98a8" font-size="9">L N &#9098; | +V +V -V -V</text>
+  </g>
+  <!-- ---------- PSU 24 ---------- -->
+  <g>
+    <rect x="300" y="220" width="180" height="62" rx="8" fill="#1c2330" stroke="#a78bfa" stroke-width="2"/>
+    <text x="390" y="245" text-anchor="middle" fill="#a78bfa" font-weight="700">Mean Well LRS-100-24</text>
+    <text x="390" y="261" text-anchor="middle" fill="#8b98a8" font-size="9">100 W &middot; 24 V / 4.5 A</text>
+    <text x="390" y="275" text-anchor="middle" fill="#8b98a8" font-size="9">L N &#9098; | +V +V -V -V</text>
+  </g>
+  <!-- ---------- SSR ---------- -->
+  <g>
+    <rect x="640" y="255" width="200" height="90" rx="8" fill="#1c2330" stroke="#fb923c" stroke-width="2"/>
+    <text x="740" y="280" text-anchor="middle" fill="#fb923c" font-weight="700">Fotek SSR-25DA</text>
+    <text x="740" y="296" text-anchor="middle" fill="#8b98a8" font-size="9">in 3-32 VDC &middot; out 24-380 VAC</text>
+    <text x="740" y="312" text-anchor="middle" fill="#8b98a8" font-size="9">zero-cross, 25 A</text>
+    <text x="656" y="333" fill="#8b98a8" font-size="9">3 (+) 4 (-)</text>
+    <text x="820" y="333" text-anchor="end" fill="#8b98a8" font-size="9">1  2</text>
+  </g>
+  <!-- ---------- HEATER ---------- -->
+  <g>
+    <rect x="930" y="265" width="150" height="70" rx="8" fill="#1c2330" stroke="#fb923c" stroke-width="2"/>
+    <text x="1005" y="292" text-anchor="middle" fill="#fb923c" font-weight="700">Boiler element</text>
+    <text x="1005" y="308" text-anchor="middle" fill="#8b98a8" font-size="9">230 V AC &middot; ~1200 W</text>
+    <text x="1005" y="322" text-anchor="middle" fill="#8b98a8" font-size="9">immersion, in boiler</text>
+  </g>
+
+  <!-- ---------- Hefronics controller ---------- -->
+  <g>
+    <rect x="520" y="380" width="200" height="120" rx="10" fill="#12261c" stroke="#34d399" stroke-width="2"/>
+    <text x="620" y="406" text-anchor="middle" fill="#34d399" font-weight="700">Hefronics controller</text>
+    <text x="620" y="422" text-anchor="middle" fill="#8b98a8" font-size="9">RS485 / Modbus RTU master</text>
+    <text x="620" y="438" text-anchor="middle" fill="#8b98a8" font-size="9">relay driver outputs + MCU</text>
+    <text x="620" y="458" text-anchor="middle" fill="#8b98a8" font-size="9">top: 8 screw terminals (out)</text>
+    <text x="620" y="474" text-anchor="middle" fill="#8b98a8" font-size="9">bottom: 8 screw terminals (out)</text>
+    <text x="620" y="492" text-anchor="middle" fill="#8b98a8" font-size="9">12 V logic, drives relay coils</text>
+  </g>
+
+  <!-- 12V from PSU to Hefronics + relay board -->
+  <path d="M480 150 H 500 V 420 H 520" stroke="#fbbf24" stroke-width="2.5" fill="none"/>
+  <path d="M500 420 H 500" stroke="#fbbf24" stroke-width="2.5" fill="none"/>
+  <path d="M500 470 H 520" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <text x="492" y="410" fill="#fbbf24" font-size="9">+12 V</text>
+
+  <!-- SSR drive: Hefronics -> SSR 3(+)/4(-) -->
+  <path d="M720 430 H 760 V 345 H 740" stroke="#38bdf8" stroke-width="1.6" stroke-dasharray="5 4" fill="none"/>
+  <text x="766" y="392" fill="#38bdf8" font-size="9">SSR drive</text>
+  <text x="766" y="404" fill="#8b98a8" font-size="9">(3-32 VDC, 12 V)</text>
+
+  <!-- SSR out -> heater -->
+  <path d="M840 285 H 930" stroke="#fb923c" stroke-width="2.5" fill="none"/>
+  <path d="M1005 335 V 780" stroke="#fb923c" stroke-width="2.5" fill="none"/>
+  <text x="850" y="277" fill="#fb923c" font-size="9">switched L</text>
+
+  <!-- Boiler mechanical -->
+  <g>
+    <rect x="930" y="100" width="150" height="90" rx="8" fill="#1c2330" stroke="#fb923c" stroke-width="1.5"/>
+    <text x="1005" y="126" text-anchor="middle" fill="#fb923c" font-weight="600">Hot-water boiler</text>
+    <text x="1005" y="142" text-anchor="middle" fill="#8b98a8" font-size="9">tank + NTC/DS18B20</text>
+    <text x="1005" y="158" text-anchor="middle" fill="#8b98a8" font-size="9">probe &rarr; controller</text>
+    <text x="1005" y="176" text-anchor="middle" fill="#8b98a8" font-size="9">outlet &rarr; V1 solenoid</text>
+  </g>
+  <path d="M1005 190 V 265" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
+  <path d="M1005 190 V 230 H 900 V 380" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="5 4" fill="none"/>
+  <text x="906" y="226" fill="#38bdf8" font-size="9">probe signal</text>
+
+  <!-- ---------- Relay bank ---------- -->
+  <g>
+    <rect x="300" y="380" width="180" height="120" rx="10" fill="#0e1c2a" stroke="#38bdf8" stroke-width="2"/>
+    <text x="390" y="406" text-anchor="middle" fill="#38bdf8" font-weight="700">Relay bank &times;8</text>
+    <text x="390" y="422" text-anchor="middle" fill="#8b98a8" font-size="9">BESTEP JQX-13F 12 V coil</text>
+    <text x="390" y="442" text-anchor="middle" fill="#8b98a8" font-size="9">CH1-5 augers</text>
+    <text x="390" y="458" text-anchor="middle" fill="#8b98a8" font-size="9">CH6 cup-drop &middot; CH7 hot &middot; CH8 cold</text>
+    <text x="390" y="478" text-anchor="middle" fill="#8b98a8" font-size="9">coils driven by controller</text>
+    <text x="390" y="493" text-anchor="middle" fill="#8b98a8" font-size="9">COM/NO switching 12 V loads</text>
+  </g>
+  <path d="M520 400 H 480" stroke="#38bdf8" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#ar)"/>
+  <text x="484" y="393" fill="#38bdf8" font-size="9">coil drives</text>
+
+  <!-- ---------- Augers ---------- -->
+  <g id="augers">
+    <rect x="60" y="540" width="150" height="46" rx="6" fill="#1c2330" stroke="#fbbf24"/>
+    <text x="135" y="568" text-anchor="middle" fill="#fbbf24">Auger 1 (Whey)</text>
+    <rect x="60" y="596" width="150" height="46" rx="6" fill="#1c2330" stroke="#fbbf24"/>
+    <text x="135" y="624" text-anchor="middle" fill="#fbbf24">Auger 2 (Cocoa)</text>
+    <rect x="60" y="652" width="150" height="46" rx="6" fill="#1c2330" stroke="#fbbf24"/>
+    <text x="135" y="680" text-anchor="middle" fill="#fbbf24">Auger 3 (Creatine)</text>
+    <rect x="60" y="708" width="150" height="46" rx="6" fill="#1c2330" stroke="#fbbf24"/>
+    <text x="135" y="736" text-anchor="middle" fill="#fbbf24">Auger 4 (Oats)</text>
+    <rect x="60" y="764" width="150" height="46" rx="6" fill="#1c2330" stroke="#fbbf24"/>
+    <text x="135" y="792" text-anchor="middle" fill="#fbbf24">Auger 5 (Vitamin)</text>
+  </g>
+  <path d="M300 440 H 275 V 563 H 210" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <path d="M275 619 H 210" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <path d="M275 675 H 210" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <path d="M275 731 H 210" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <path d="M275 787 H 210" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <text x="238" y="556" fill="#8b98a8" font-size="9">CH1..CH5</text>
+
+  <!-- ---------- Solenoids / valves ---------- -->
+  <g>
+    <rect x="640" y="520" width="150" height="44" rx="6" fill="#1c2330" stroke="#fbbf24"/>
+    <text x="715" y="540" text-anchor="middle" fill="#fbbf24">V0 cup-drop</text>
+    <text x="715" y="554" text-anchor="middle" fill="#8b98a8" font-size="9">solenoid 12 V</text>
+    <rect x="640" y="580" width="150" height="44" rx="6" fill="#1c2330" stroke="#fb923c"/>
+    <text x="715" y="600" text-anchor="middle" fill="#fb923c">V1 hot solenoid</text>
+    <text x="715" y="614" text-anchor="middle" fill="#8b98a8" font-size="9">230 V ? see note</text>
+    <rect x="640" y="640" width="150" height="44" rx="6" fill="#1c2330" stroke="#60a5fa"/>
+    <text x="715" y="660" text-anchor="middle" fill="#60a5fa">V2 cold solenoid</text>
+    <text x="715" y="674" text-anchor="middle" fill="#8b98a8" font-size="9">12/24 V DC</text>
+  </g>
+  <path d="M480 470 H 560 V 542 H 640" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <path d="M560 602 H 640" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <path d="M560 662 H 640" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <text x="566" y="590" fill="#8b98a8" font-size="9">CH6..CH8</text>
+
+  <!-- ---------- DIP delay module + actuators ---------- -->
+  <g>
+    <rect x="640" y="720" width="180" height="90" rx="8" fill="#1c2330" stroke="#a78bfa" stroke-width="2"/>
+    <text x="730" y="745" text-anchor="middle" fill="#a78bfa" font-weight="700">8-ch DIP delay module</text>
+    <text x="730" y="762" text-anchor="middle" fill="#8b98a8" font-size="9">edge-triggered timers</text>
+    <text x="730" y="778" text-anchor="middle" fill="#8b98a8" font-size="9">drives actuator boxes</text>
+    <text x="730" y="796" text-anchor="middle" fill="#8b98a8" font-size="9">(mixer / turntable / gate)</text>
+  </g>
+  <path d="M620 500 V 740 H 640" stroke="#38bdf8" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#ar)"/>
+  <text x="558" y="712" fill="#38bdf8" font-size="9">trigger</text>
+
+  <g>
+    <rect x="900" y="700" width="150" height="40" rx="6" fill="#1c2330" stroke="#34d399"/>
+    <text x="975" y="725" text-anchor="middle" fill="#34d399">Mixer head</text>
+    <rect x="900" y="748" width="150" height="40" rx="6" fill="#1c2330" stroke="#34d399"/>
+    <text x="975" y="773" text-anchor="middle" fill="#34d399">Turntable motor</text>
+    <rect x="900" y="796" width="150" height="40" rx="6" fill="#1c2330" stroke="#34d399"/>
+    <text x="975" y="821" text-anchor="middle" fill="#34d399">Cup gate</text>
+  </g>
+  <path d="M820 740 H 860 V 720 H 900" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <path d="M860 768 H 900" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+  <path d="M860 816 H 900" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#ar)"/>
+
+  <!-- ---------- Refrigeration ---------- -->
+  <g>
+    <rect x="900" y="560" width="180" height="110" rx="8" fill="#1c2330" stroke="#60a5fa" stroke-width="2"/>
+    <text x="990" y="584" text-anchor="middle" fill="#60a5fa" font-weight="700">Refrigeration loop</text>
+    <text x="990" y="601" text-anchor="middle" fill="#8b98a8" font-size="9">compressor (24 V ctrl)</text>
+    <text x="990" y="617" text-anchor="middle" fill="#8b98a8" font-size="9">&rarr; condenser + fan</text>
+    <text x="990" y="633" text-anchor="middle" fill="#8b98a8" font-size="9">&rarr; capillary &rarr; evaporator</text>
+    <text x="990" y="649" text-anchor="middle" fill="#8b98a8" font-size="9">chills 6 L water bath</text>
+    <text x="990" y="663" text-anchor="middle" fill="#8b98a8" font-size="9">R-134a</text>
+  </g>
+  <path d="M480 250 H 560 V 560 H 900" stroke="#a78bfa" stroke-width="2" fill="none"/>
+  <text x="566" y="548" fill="#a78bfa" font-size="9">24 V</text>
+  <path d="M900 230 H 880 V 470 H 720" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="5 4" fill="none"/>
+  <text x="806" y="466" fill="#38bdf8" font-size="9">compressor ctrl relay</text>
+
+  <!-- ---------- Android HMI ---------- -->
+  <g>
+    <rect x="300" y="560" width="180" height="90" rx="8" fill="#1c2330" stroke="#38bdf8" stroke-width="2"/>
+    <text x="390" y="586" text-anchor="middle" fill="#38bdf8" font-weight="700">Android kiosk HMI</text>
+    <text x="390" y="603" text-anchor="middle" fill="#8b98a8" font-size="9">touchscreen + Android box</text>
+    <text x="390" y="619" text-anchor="middle" fill="#8b98a8" font-size="9">A8PRTC25080527</text>
+    <text x="390" y="635" text-anchor="middle" fill="#8b98a8" font-size="9">12 V from LRS-100-12</text>
+    <text x="390" y="649" text-anchor="middle" fill="#8b98a8" font-size="9">USB &rarr; RS485 dongle</text>
+  </g>
+  <path d="M500 440 V 520 H 480 V 590 H 480" stroke="#fbbf24" stroke-width="2" fill="none"/>
+  <path d="M560 590 H 520" stroke="#38bdf8" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#ar)"/>
+  <text x="524" y="583" fill="#38bdf8" font-size="9">Modbus A/B</text>
+
+  <!-- ---------- Sensors ---------- -->
+  <g>
+    <rect x="60" y="120" width="150" height="230" rx="8" fill="#1c2330" stroke="#8b98a8" stroke-width="1.5"/>
+    <text x="135" y="146" text-anchor="middle" fill="#8b98a8" font-weight="600">Sensors</text>
+    <text x="75" y="172" fill="#8b98a8" font-size="10">&bull; boiler NTC/DS18B20</text>
+    <text x="75" y="194" fill="#8b98a8" font-size="10">&bull; chiller bath probe</text>
+    <text x="75" y="216" fill="#8b98a8" font-size="10">&bull; cup-present microswitch</text>
+    <text x="75" y="238" fill="#8b98a8" font-size="10">&bull; door reed switch</text>
+    <text x="75" y="260" fill="#8b98a8" font-size="10">&bull; water tank float</text>
+    <text x="75" y="282" fill="#8b98a8" font-size="10">&bull; waste-tray level</text>
+    <text x="75" y="304" fill="#8b98a8" font-size="10">&bull; (hopper weight/opt.)</text>
+    <text x="135" y="336" text-anchor="middle" fill="#8b98a8" font-size="9">&rarr; controller inputs</text>
+  </g>
+  <path d="M210 235 H 260 V 360 H 520" stroke="#38bdf8" stroke-width="1.3" stroke-dasharray="4 3" fill="none"/>
+  <text x="266" y="352" fill="#38bdf8" font-size="9">sensor lines</text>
+
+  <!-- ============ WATER FLOW OVERLAY (dashed, bottom) ============ -->
+  <g opacity="0.85">
+    <rect x="60" y="830" width="180" height="40" rx="6" fill="#10202e" stroke="#60a5fa" stroke-dasharray="4 3"/>
+    <text x="150" y="855" text-anchor="middle" fill="#60a5fa">2 &times; 20 L water jugs</text>
+    <path d="M240 850 H 320" stroke="#60a5fa" stroke-width="1.6" stroke-dasharray="6 4" fill="none"/>
+    <text x="248" y="843" fill="#60a5fa" font-size="9">silicone tube</text>
+    <path d="M320 850 H 320 V 700" stroke="#60a5fa" stroke-width="1.6" stroke-dasharray="6 4" fill="none"/>
+    <text x="326" y="760" fill="#60a5fa" font-size="9">water feed</text>
+  </g>
+
+  <!-- footnotes -->
+  <text x="620" y="876" fill="#8b98a8" font-size="9">NOTE: V1 hot-water valve may be mains- or DC-operated &mdash; confirm with a multimeter before replicating. Logic-level vs 230 V switching must be verified.</text>
+</svg>
+
+<!-- ============================ NET TABLE ============================ -->
+<div class="tbl">
+  <table>
+    <thead><tr><th>Connection</th><th>From</th><th>To</th><th>Wire / rating</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>MAINS-L</td><td>IEC inlet L</td><td>LRS-100-12 L, LRS-100-24 L, SSR-25DA pin 1</td><td><span class="warn">230 V, 1.5 mm&sup2;</span></td><td>Fuse + main switch upstream</td></tr>
+      <tr><td>MAINS-N</td><td>IEC inlet N</td><td>LRS-100-12 N, LRS-100-24 N, boiler/common</td><td><span class="warn">230 V, 1.5 mm&sup2;</span></td><td>Neutral common to all PSUs</td></tr>
+      <tr><td>PE</td><td>IEC inlet &#9098;</td><td>Chassis, PSU &#9098;, heater body</td><td>1.5 mm&sup2; G/Y</td><td>Safety earth, mandatory</td></tr>
+      <tr><td>+12V</td><td>LRS-100-12 +V</td><td>Hefronics V+, relay bank coil supply, Android box</td><td>18 AWG red</td><td>Max 8.5 A total</td></tr>
+      <tr><td>0V / GND</td><td>LRS-100-12 -V</td><td>Hefronics GND, relay bank GND, Android box</td><td>18 AWG black</td><td>Common logic ground</td></tr>
+      <tr><td>+24V</td><td>LRS-100-24 +V</td><td>Compressor relay/contactor coil, fan</td><td>20 AWG</td><td>Max 4.5 A</td></tr>
+      <tr><td>0V24</td><td>LRS-100-24 -V</td><td>Compressor relay GND</td><td>20 AWG black</td><td>&nbsp;</td></tr>
+      <tr><td>HEATER-L</td><td>SSR-25DA pin 2</td><td>Boiler element terminal</td><td><span class="warn">230 V, 1.5 mm&sup2;</span></td><td>Switched line</td></tr>
+      <tr><td>HEATER-N</td><td>MAINS-N</td><td>Boiler element terminal</td><td><span class="warn">230 V</span></td><td>Permanent neutral</td></tr>
+      <tr><td>SSR-DRV</td><td>Hefronics output (heater)</td><td>SSR-25DA pin 3 (+), pin 4 (&minus;)</td><td>22 AWG</td><td>3-32 VDC control, 12 V</td></tr>
+      <tr><td>AU1..AU5</td><td>Relay bank CH1..CH5 NO</td><td>Auger motors 1..5</td><td>22 AWG</td><td>12 V DC geared motors</td></tr>
+      <tr><td>CUP</td><td>Relay bank CH6 NO</td><td>V0 cup-drop solenoid</td><td>22 AWG</td><td>12 V DC</td></tr>
+      <tr><td>HOT-V</td><td>Relay bank CH7 NO</td><td>V1 hot-water solenoid</td><td>22 AWG</td><td><span class="warn">Verify coil voltage</span></td></tr>
+      <tr><td>COLD-V</td><td>Relay bank CH8 NO</td><td>V2 cold-water solenoid</td><td>22 AWG</td><td>Likely 12/24 V DC</td></tr>
+      <tr><td>COIL-DRV</td><td>Hefronics bottom terminals</td><td>Relay bank coil inputs (8)</td><td>24 AWG</td><td>12 V logic drive</td></tr>
+      <tr><td>ACT-DRV</td><td>DIP delay module outputs</td><td>Mixer, turntable, gate actuator boxes</td><td>22 AWG</td><td>Timed/edge-triggered</td></tr>
+      <tr><td>MODBUS</td><td>Android USB&rarr;RS485 dongle A/B</td><td>Hefronics RS485 A/B</td><td>shielded twisted pair</td><td>9600/19200 8N1 typical</td></tr>
+      <tr><td>PROBE-HOT</td><td>Boiler NTC/DS18B20</td><td>Hefronics analog input</td><td>24 AWG</td><td>PID/bang-bang heater control</td></tr>
+      <tr><td>PROBE-COLD</td><td>Chiller bath probe</td><td>Hefronics analog input</td><td>24 AWG</td><td>Compressor thermostat</td></tr>
+      <tr><td>CUP-SENSE</td><td>Cup microswitch</td><td>Hefronics digital input</td><td>24 AWG</td><td>Dispense interlock</td></tr>
+      <tr><td>DOOR-SW</td><td>Door reed switch</td><td>Hefronics digital input</td><td>24 AWG</td><td>Safety interlock</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<footer>
+  Deliverable A &mdash; system wiring, derived from the machine photographs. Box-level and rebuildable from off-the-shelf boards.
+  Not a PCB fabrication file. Items marked <span class="warn">verify</span> need multimeter confirmation.
+</footer>
+</body>
+</html>

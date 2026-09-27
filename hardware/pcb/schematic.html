@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Protein Dispenser &mdash; Custom Controller PCB Schematic (Deliverable B)</title>
+<style>
+  :root{--bg:#0e1116;--panel:#161b23;--line:#28303d;--txt:#e6edf3;--dim:#8b98a8;--ac:#38bdf8;--ok:#34d399;--hot:#fb923c;--mains:#f87171}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:13px/1.55 ui-monospace,Menlo,Consolas,monospace}
+  header{padding:14px 20px;border-bottom:1px solid var(--line);background:#11161d;position:sticky;top:0;z-index:10}
+  h1{margin:0;font-size:16px} h1 span{color:var(--dim);font-weight:400;font-size:12px}
+  h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--ac);margin:22px 0 10px}
+  h3{font-size:12px;color:var(--ok);margin:16px 0 6px}
+  .wrap{padding:14px 20px;max-width:1240px}
+  svg{width:100%;height:auto;background:#0b0f14;border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+  table{border-collapse:collapse;width:100%;font-size:11px;background:var(--panel);border-radius:8px;overflow:hidden}
+  th,td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:left}
+  th{color:var(--ac);text-transform:uppercase;font-size:10px;letter-spacing:.06em;background:#12171f}
+  td:first-child{color:var(--ok);white-space:nowrap}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .warn{color:var(--mains);font-weight:600}
+  code{color:var(--ac)}
+  ul{margin:6px 0;padding-left:18px}
+  li{margin:3px 0;font-size:11.5px}
+  .pill{display:inline-block;font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid var(--line);color:var(--dim);margin-left:6px}
+  .pill.ok{border-color:var(--ok);color:var(--ok)}
+  .pill.mains{border-color:var(--mains);color:var(--mains)}
+  footer{padding:14px 20px;color:var(--dim);font-size:10px;text-align:center;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Custom Controller PCB &mdash; Schematic &amp; Design Package <span>&middot; Deliverable B &middot; rev A &middot; fabricable</span></h1>
+</header>
+
+<div class="wrap">
+
+<div class="card">
+  <h3 style="margin-top:0">What this is</h3>
+  <p style="margin:6px 0;font-size:12px;color:var(--dim)">
+  A <b style="color:var(--txt)">from-scratch control board</b> that replaces the Hefronics controller + BESTEP relay bank in one PCB of the same functional footprint:
+  8 relay channels, heater triac/SSR drive, RS485/Modbus, sensor inputs. Designed around standard, in-stock parts. Fabricate at JLCPCB / PCBWay / Aisler.
+  </p>
+  <p style="margin:6px 0;font-size:12px;color:var(--dim)">
+  <b style="color:var(--txt)">Safety envelope:</b> this board is <span class="pill ok">all low voltage</span>. 230 V AC is switched <b>externally</b> by the Fotek SSR-25DA &mdash; mains never enters this PCB except the two SSR control wires.
+  </p>
+</div>
+
+<h2>Block schematic</h2>
+<svg viewBox="0 0 1180 760" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace,Menlo,monospace" font-size="10.5">
+  <defs><marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#8b98a8"/></marker></defs>
+
+  <!-- input -->
+  <rect x="20" y="300" width="120" height="70" rx="8" fill="#1c2330" stroke="#fbbf24" stroke-width="2"/>
+  <text x="80" y="328" text-anchor="middle" fill="#fbbf24" font-weight="700">DC IN</text>
+  <text x="80" y="344" text-anchor="middle" fill="#8b98a8">12-24 V</text>
+  <text x="80" y="358" text-anchor="middle" fill="#8b98a8">J1</text>
+  <path d="M140 335 H 170" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#a)"/>
+
+  <!-- protection -->
+  <rect x="170" y="300" width="120" height="70" rx="8" fill="#1c2330" stroke="#8b98a8" stroke-width="1.6"/>
+  <text x="230" y="324" text-anchor="middle" fill="#8b98a8" font-weight="600">F1 + D1 + D2</text>
+  <text x="230" y="340" text-anchor="middle" fill="#8b98a8">PTC &middot; Schottky</text>
+  <text x="230" y="354" text-anchor="middle" fill="#8b98a8">TVS clamp</text>
+  <path d="M290 335 H 320" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#a)"/>
+
+  <!-- buck -->
+  <rect x="320" y="285" width="140" height="100" rx="8" fill="#1c2330" stroke="#fbbf24" stroke-width="2"/>
+  <text x="390" y="312" text-anchor="middle" fill="#fbbf24" font-weight="700">LM2596S-12</text>
+  <text x="390" y="328" text-anchor="middle" fill="#8b98a8">buck 3 A</text>
+  <text x="390" y="344" text-anchor="middle" fill="#8b98a8">L1 33uH + D3</text>
+  <text x="390" y="360" text-anchor="middle" fill="#8b98a8">C1/C3</text>
+
+  <!-- rails -->
+  <path d="M460 320 H 520" stroke="#fbbf24" stroke-width="2" fill="none"/>
+  <text x="470" y="313" fill="#fbbf24">+12V</text>
+  <path d="M460 350 H 500 V 250 H 520" stroke="#34d399" stroke-width="1.8" fill="none"/>
+  <text x="470" y="366" fill="#34d399">U2 78L05</text>
+  <text x="506" y="246" fill="#34d399">+5V</text>
+
+  <!-- relay driver -->
+  <rect x="520" y="120" width="150" height="110" rx="8" fill="#0e1c2a" stroke="#38bdf8" stroke-width="2"/>
+  <text x="595" y="146" text-anchor="middle" fill="#38bdf8" font-weight="700">ULN2803A</text>
+  <text x="595" y="163" text-anchor="middle" fill="#8b98a8">8-ch darlington</text>
+  <text x="595" y="179" text-anchor="middle" fill="#8b98a8">MCU GPIO &rarr; coils</text>
+  <text x="595" y="196" text-anchor="middle" fill="#8b98a8">internal flyback</text>
+  <text x="595" y="213" text-anchor="middle" fill="#8b98a8">+ D5..D12 externals</text>
+
+  <!-- MCU -->
+  <rect x="520" y="300" width="180" height="150" rx="10" fill="#12261c" stroke="#34d399" stroke-width="2"/>
+  <text x="610" y="328" text-anchor="middle" fill="#34d399" font-weight="700">STM32F103C8T6</text>
+  <text x="610" y="345" text-anchor="middle" fill="#8b98a8">Cortex-M3 @72MHz</text>
+  <text x="610" y="362" text-anchor="middle" fill="#8b98a8">Y1 8MHz + C6/C7</text>
+  <text x="610" y="380" text-anchor="middle" fill="#8b98a8">R1 10k NRST</text>
+  <text x="610" y="396" text-anchor="middle" fill="#8b98a8">R2 10k BOOT0</text>
+  <text x="610" y="413" text-anchor="middle" fill="#8b98a8">J2 SWD 1.27mm</text>
+  <text x="610" y="432" text-anchor="middle" fill="#8b98a8">7 GPIO &rarr; relays</text>
+  <text x="610" y="445" text-anchor="middle" fill="#8b98a8">1 GPIO &rarr; SSR</text>
+
+  <path d="M610 300 V 260 H 610" stroke="#38bdf8" stroke-width="1.6" fill="none"/>
+  <path d="M595 260 V 230" stroke="#38bdf8" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+  <text x="618" y="250" fill="#38bdf8">GPIO x8</text>
+
+  <!-- relay contacts -->
+  <rect x="740" y="80" width="150" height="150" rx="8" fill="#1c2330" stroke="#fbbf24" stroke-width="2"/>
+  <text x="815" y="106" text-anchor="middle" fill="#fbbf24" font-weight="700">K1..K8</text>
+  <text x="815" y="123" text-anchor="middle" fill="#8b98a8">JQX-13F 12V</text>
+  <text x="815" y="140" text-anchor="middle" fill="#8b98a8">SPDT 10A</text>
+  <text x="815" y="160" text-anchor="middle" fill="#8b98a8">NO COM</text>
+  <text x="815" y="180" text-anchor="middle" fill="#8b98a8">CH1-5 augers</text>
+  <text x="815" y="196" text-anchor="middle" fill="#8b98a8">CH6 cup</text>
+  <text x="815" y="212" text-anchor="middle" fill="#8b98a8">CH7 hot CH8 cold</text>
+  <path d="M670 170 H 740" stroke="#38bdf8" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+  <path d="M890 155 H 940" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#a)"/>
+
+  <!-- output block -->
+  <rect x="940" y="70" width="130" height="170" rx="8" fill="#1c2330" stroke="#fbbf24" stroke-width="1.6"/>
+  <text x="1005" y="96" text-anchor="middle" fill="#fbbf24" font-weight="600">J8</text>
+  <text x="1005" y="113" text-anchor="middle" fill="#8b98a8">10-pin</text>
+  <text x="1005" y="129" text-anchor="middle" fill="#8b98a8">terminal</text>
+  <text x="1005" y="150" text-anchor="middle" fill="#8b98a8">+12V</text>
+  <text x="1005" y="166" text-anchor="middle" fill="#8b98a8">+ 8 NO</text>
+  <text x="1005" y="182" text-anchor="middle" fill="#8b98a8">+ COM</text>
+  <text x="1005" y="205" text-anchor="middle" fill="#8b98a8">&rarr; augers,</text>
+  <text x="1005" y="220" text-anchor="middle" fill="#8b98a8">solenoids</text>
+
+  <!-- SSR drive -->
+  <rect x="740" y="300" width="150" height="90" rx="8" fill="#1c2330" stroke="#fb923c" stroke-width="2"/>
+  <text x="815" y="326" text-anchor="middle" fill="#fb923c" font-weight="700">Q1 2N7002</text>
+  <text x="815" y="343" text-anchor="middle" fill="#8b98a8">R5 1k / R6 10k</text>
+  <text x="815" y="360" text-anchor="middle" fill="#8b98a8">J4 SSR drive</text>
+  <text x="815" y="377" text-anchor="middle" fill="#8b98a8">3-32 VDC</text>
+  <path d="M700 360 H 740" stroke="#38bdf8" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+  <path d="M890 345 H 940 V 330 H 1010" stroke="#fb923c" stroke-width="2" fill="none" marker-end="url(#a)"/>
+  <rect x="1010" y="300" width="150" height="80" rx="8" fill="#2a1a1a" stroke="#f87171" stroke-width="2"/>
+  <text x="1085" y="326" text-anchor="middle" fill="#f87171" font-weight="700">SSR-25DA</text>
+  <text x="1085" y="343" text-anchor="middle" fill="#8b98a8">external module</text>
+  <text x="1085" y="360" text-anchor="middle" fill="#f87171">230 V heater</text>
+  <text x="1085" y="374" text-anchor="middle" fill="#8b98a8">off-board</text>
+
+  <!-- RS485 -->
+  <rect x="740" y="440" width="150" height="90" rx="8" fill="#1c2330" stroke="#38bdf8" stroke-width="2"/>
+  <text x="815" y="466" text-anchor="middle" fill="#38bdf8" font-weight="700">U4 MAX485</text>
+  <text x="815" y="483" text-anchor="middle" fill="#8b98a8">R3 120R term</text>
+  <text x="815" y="499" text-anchor="middle" fill="#8b98a8">D4 TVS</text>
+  <text x="815" y="516" text-anchor="middle" fill="#8b98a8">J3 A/B/GND</text>
+  <path d="M700 485 H 740" stroke="#38bdf8" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+  <path d="M890 485 H 940" stroke="#38bdf8" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#a)"/>
+  <text x="946" y="478" fill="#38bdf8">Modbus RTU</text>
+
+  <!-- analog -->
+  <rect x="460" y="520" width="150" height="100" rx="8" fill="#1c2330" stroke="#a78bfa" stroke-width="1.8"/>
+  <text x="535" y="546" text-anchor="middle" fill="#a78bfa" font-weight="700">Analog in</text>
+  <text x="535" y="563" text-anchor="middle" fill="#8b98a8">J5 boiler NTC</text>
+  <text x="535" y="579" text-anchor="middle" fill="#8b98a8">R7 10k div + C8</text>
+  <text x="535" y="596" text-anchor="middle" fill="#8b98a8">J6 chiller NTC</text>
+  <text x="535" y="612" text-anchor="middle" fill="#8b98a8">R8 10k div + C9</text>
+  <path d="M610 520 V 450" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="4 3" fill="none" marker-end="url(#a)"/>
+  <text x="616" y="500" fill="#38bdf8">ADC</text>
+
+  <!-- digital in -->
+  <rect x="460" y="650" width="150" height="90" rx="8" fill="#1c2330" stroke="#a78bfa" stroke-width="1.8"/>
+  <text x="535" y="676" text-anchor="middle" fill="#a78bfa" font-weight="700">Digital in</text>
+  <text x="535" y="693" text-anchor="middle" fill="#8b98a8">J7 6-pin</text>
+  <text x="535" y="709" text-anchor="middle" fill="#8b98a8">RN1 10k pull-ups</text>
+  <text x="535" y="725" text-anchor="middle" fill="#8b98a8">C10 debounce</text>
+  <path d="M610 650 V 470" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="4 3" fill="none"/>
+  <text x="616" y="640" fill="#38bdf8">GPIO</text>
+  <text x="470" y="676" fill="#8b98a8" font-size="9">cup &middot; door &middot; float &middot; waste</text>
+</svg>
+
+<h2>Netlist &mdash; key nets</h2>
+<table>
+  <thead><tr><th>Net</th><th>Connections</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>VIN</td><td>J1.1 &rarr; F1 &rarr; D1.A &rarr; C1(+) &rarr; C2 &rarr; U1.VIN &rarr; (relay coil bus +12V)</td><td>12-24 V DC in</td></tr>
+    <tr><td>GND</td><td>J1.2, C1(&minus;), C2, U1.GND, U2.GND, U3.VSS, U4.GND, U5.GND, RN1, C4/C5/C8/C9, J3.3</td><td>Common ground</td></tr>
+    <tr><td>+12V</td><td>U1.OUT, L1, C3(+), U2.IN, K1..K8 coil(+), J8.1</td><td>Buck output, 3 A max</td></tr>
+    <tr><td>+5V</td><td>U2.OUT, C4, C5, U3.VDD, U4.VCC</td><td>MCU + transceiver</td></tr>
+    <tr><td>RLY_DRV1..8</td><td>U3.PA0..PA7 &rarr; U5.IN1..IN8 &rarr; U5.OUT1..8 &rarr; K1..K8 coil(&minus;)</td><td>Low-side coil drive</td></tr>
+    <tr><td>HEAT_DRV</td><td>U3.PB0 &rarr; R5 &rarr; Q1.G, R6 to GND, Q1.D &rarr; J4.1, Q1.S&rarr;GND, J4.2&rarr;GND</td><td>3-32 VDC SSR control (12 V)</td></tr>
+    <tr><td>RS485_A / RS485_B</td><td>U4.A/B &harr; R3 &harr; D4 &harr; J3.1/2</td><td>Half-duplex, 120R terminated</td></tr>
+    <tr><td>RS485_DE</td><td>U3.PB1 &rarr; U4.DE+RE, R4 10k to GND</td><td>Direction control</td></tr>
+    <tr><td>UART_TX / RX</td><td>U3.PA9/PA10 &harr; U4.DI/RO</td><td>USART1</td></tr>
+    <tr><td>NTC_HOT</td><td>J5.1 &rarr; R7 &rarr; U3.PA0(ADC) ; C8 to GND ; J5.2 &rarr; GND</td><td>10k NTC divider, 25&deg;C = 10k</td></tr>
+    <tr><td>NTC_COLD</td><td>J6.1 &rarr; R8 &rarr; U3.PA1(ADC) ; C9 to GND ; J6.2 &rarr; GND</td><td>Chiller bath probe</td></tr>
+    <tr><td>IN_CUP / IN_DOOR / IN_FLOAT / IN_WASTE</td><td>J7.1..4 &rarr; RN1 pull-ups &rarr; U3.PB2..PB5 ; C10 to GND</td><td>Active-low switches</td></tr>
+    <tr><td>K1..K8 contacts</td><td>K&lt;n&gt;.NO &rarr; J8.2..9 ; K&lt;n&gt;.COM &rarr; J8.10</td><td>Switched +12V to loads</td></tr>
+  </tbody>
+</table>
+
+<h2>Bill of materials</h2>
+<table>
+  <thead><tr><th>Ref</th><th>Value / Part</th><th>Package</th><th>Qty</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>U1</td><td>LM2596S-12</td><td>TO-263-5</td><td>1</td><td>12 V 3 A buck regulator</td></tr>
+    <tr><td>U2</td><td>78L05</td><td>SOT-89-3</td><td>1</td><td>5 V MCU supply</td></tr>
+    <tr><td>U3</td><td>STM32F103C8T6</td><td>LQFP-48</td><td>1</td><td>Controller</td></tr>
+    <tr><td>U4</td><td>MAX485</td><td>SOIC-8</td><td>1</td><td>RS485/Modbus</td></tr>
+    <tr><td>U5</td><td>ULN2803A</td><td>SOIC-18W</td><td>1</td><td>8-ch relay driver</td></tr>
+    <tr><td>K1..K8</td><td>JQX-13F-12VDC (or SRD-12VDC-SL-C)</td><td>THT SPDT 10 A</td><td>8</td><td>Augers, cup, hot, cold</td></tr>
+    <tr><td>Q1</td><td>2N7002</td><td>SOT-23</td><td>1</td><td>SSR drive</td></tr>
+    <tr><td>D1, D3</td><td>SS34 / SS54</td><td>SMA / SMC</td><td>2</td><td>Reverse + freewheel</td></tr>
+    <tr><td>D2, D4</td><td>SMBJ33A / SMBJ6.5CA</td><td>SMB</td><td>2</td><td>TVS clamps</td></tr>
+    <tr><td>D5..D12</td><td>1N4007</td><td>DO-41</td><td>8</td><td>Relay flyback</td></tr>
+    <tr><td>L1</td><td>33 &micro;H 3 A</td><td>SRN1060</td><td>1</td><td>Buck inductor</td></tr>
+    <tr><td>Y1</td><td>8 MHz</td><td>HC49</td><td>1</td><td>HSE crystal</td></tr>
+    <tr><td>C1</td><td>470 &micro;F / 35 V</td><td>CP 10x10.5</td><td>1</td><td>VIN bulk</td></tr>
+    <tr><td>C2, C5, C8, C9, C10</td><td>100 nF</td><td>0805</td><td>5+</td><td>Decoupling / filter</td></tr>
+    <tr><td>C3</td><td>220 &micro;F / 25 V</td><td>CP 8x10</td><td>1</td><td>12 V bulk</td></tr>
+    <tr><td>C4</td><td>10 &micro;F / 16 V</td><td>0805</td><td>1</td><td>5 V out</td></tr>
+    <tr><td>C6, C7</td><td>22 pF</td><td>0805</td><td>2</td><td>HSE load</td></tr>
+    <tr><td>R1, R2</td><td>10 k</td><td>0805</td><td>2</td><td>NRST / BOOT0</td></tr>
+    <tr><td>R3</td><td>120 R</td><td>0805</td><td>1</td><td>RS485 termination</td></tr>
+    <tr><td>R4, R6</td><td>10 k</td><td>0805</td><td>2</td><td>DE default / gate pulldown</td></tr>
+    <tr><td>R5</td><td>1 k</td><td>0805</td><td>1</td><td>Gate series</td></tr>
+    <tr><td>R7, R8</td><td>10 k 1%</td><td>0805</td><td>2</td><td>NTC dividers</td></tr>
+    <tr><td>RN1</td><td>10 k &times; 4 array</td><td>4x0805</td><td>1</td><td>Digital pull-ups</td></tr>
+    <tr><td>F1</td><td>750 mA PTC</td><td>inline / 1206</td><td>1</td><td>Overcurrent</td></tr>
+    <tr><td>J1, J4, J5, J6</td><td>KF128-2P 5.08 mm</td><td>THT</td><td>4</td><td>Power / SSR / probes</td></tr>
+    <tr><td>J3</td><td>KF128-3P</td><td>THT</td><td>1</td><td>Modbus A/B/GND</td></tr>
+    <tr><td>J7</td><td>KF128-6P</td><td>THT</td><td>1</td><td>Digital inputs</td></tr>
+    <tr><td>J8</td><td>KF128-10P</td><td>THT</td><td>1</td><td>12 V + 8 relay outputs</td></tr>
+    <tr><td>J2</td><td>SWD 1x04 1.27 mm</td><td>THT</td><td>1</td><td>Programming</td></tr>
+  </tbody>
+</table>
+
+<h2>Design rules &amp; fabrication notes</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Stackup &amp; fab</h3>
+    <ul>
+      <li><b>2 layers</b>, 1.6 mm FR-4, 1 oz copper &mdash; sufficient; no mains on board</li>
+      <li>Min trace 0.25 mm signal, <b>1.0 mm</b> for +12V and relay coil bus</li>
+      <li>Board outline: derive from relay spacing (8 &times; 20 mm pitch = 160 mm min width)</li>
+      <li>Relay coil snubber diodes D5..D12 adjacent to each coil pin</li>
+      <li>Keep SSR drive (J4) away from NTC analog traces &mdash; route on opposite side</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Safety</h3>
+    <ul>
+      <li><span class="warn">230 V never on this PCB.</span> Heater mains switching is entirely inside the external Fotek SSR-25DA</li>
+      <li>Relay contacts switch <b>12 V DC loads only</b> (augers, solenoids) &mdash; verify each load's coil rating</li>
+      <li>Add a 5 A fuse on the +12V output bus if loads total &gt; 3 A</li>
+      <li>PE/earth bonding stays on the chassis, not this board</li>
+      <li>Isolate the RS485 ground from the load ground bus if a long cable run is used</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Thermal</h3>
+    <ul>
+      <li>LM2596S dissipates ~ (VIN&minus;12)&times;I. At 24 V in / 2 A out &rarr; 24 W&nbsp;&times;... &rarr; <b>use a heatsink tab or drop to 12 V input</b></li>
+      <li>Prefer <b>12 V input</b> if you keep the LM2596; at 24 V in, replace with an MP1584/SY8205 buck module</li>
+      <li>ULN2803: ~1 V &times; 8 &times; 70 mA = 0.6 W worst case; copper pour under it</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Bring-up checklist</h3>
+    <ul>
+      <li>Power J1 with 12 V current-limited to 200 mA &mdash; verify +12 V and +5 V rails</li>
+      <li>Flash via J2 SWD; blink PC13</li>
+      <li>Drive each relay individually; verify with a meter on J8</li>
+      <li>Verify SSR drive at J4 swings 0 &rarr; 12 V</li>
+      <li>Read both NTCs at 25&deg;C &mdash; expect ~10 k&Omega; / mid-scale ADC</li>
+      <li>Loopback test on J3 (A&harr;B shorted) for Modbus</li>
+    </ul>
+  </div>
+</div>
+
+<h2>How to turn this into a fabricated board</h2>
+<div class="card">
+  <ul>
+    <li><b>1. Import</b> <code>hardware/pcb/controller.net</code> into KiCad 7/8 (File &rarr; Import &rarr; Netlist) &mdash; the component list, values, and footprints load automatically.</li>
+    <li><b>2. Draw the schematic</b> from the net table above into KiCad Eeschema, or skip straight to layout using the netlist + this block diagram.</li>
+    <li><b>3. Layout</b> with the design rules on the left, then run DRC.</li>
+    <li><b>4. Export</b> Gerbers + drill (KiCad &rarr; Fabrication Outputs) and upload to JLCPCB / PCBWay / Aisler.</li>
+    <li><b>5. Verify</b> the bring-up checklist before connecting any real loads.</li>
+  </ul>
+  <p style="color:var(--dim);font-size:11px;margin-bottom:0">
+  The netlist is importable as-is; the schematic symbols are standard KiCad library parts. Footprints named in the netlist are from the official KiCad library, so they resolve without extra downloads.
+  </p>
+</div>
+
+</div>
+<footer>Deliverable B &mdash; custom control PCB rev A. Low-voltage board; mains switching delegated to the external SSR-25DA. Fabricate, then bring up per checklist.</footer>
+</body>
+</html>

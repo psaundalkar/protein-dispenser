@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # No dependencies to install - the project uses only the Node stdlib.
+      - name: Twin brew-cycle test
+        run: node twin/test_cycle.js
+
+      - name: Schematic structural checks
+        run: node hardware/pcb/check_sch.js
+
+      - name: Netlist checks
+        run: node hardware/pcb/check_netlist.js
+
+      - name: Render schematic to SVG
+        run: node hardware/pcb/render_svg.js
+
+      - name: Build static site
+        run: node scripts/build-site.js
+
+      - name: Upload static site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: public/
+          retention-days: 7

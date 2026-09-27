@@ -1,0 +1,24 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node scripts/build-site.js",
+  "outputDirectory": "public",
+  "framework": null,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/three/view3d.js",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
+    },
+    {
+      "source": "/demo-state.json",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
+    }
+  ],
+  "rewrites": [
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/view3d", "destination": "/three/index.html" },
+    { "source": "/wiring", "destination": "/wiring.html" },
+    { "source": "/schematic", "destination": "/schematic.html" }
+  ]
+}

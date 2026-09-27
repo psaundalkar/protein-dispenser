@@ -1,0 +1,29 @@
+{
+  "name": "protein-dispenser",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Digital twin, 3D internal view, fabricable KiCad control PCB and wiring diagram for a protein-powder vending machine.",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node twin/server.js",
+    "dev": "node twin/server.js",
+    "test": "node twin/test_cycle.js",
+    "build": "node scripts/build-site.js",
+    "check:schematic": "node hardware/pcb/check_sch.js && node hardware/pcb/check_netlist.js",
+    "render:schematic": "node hardware/pcb/render_svg.js",
+    "gen:schematic": "node hardware/pcb/gen_sch.js"
+  },
+  "keywords": [
+    "digital-twin",
+    "vending-machine",
+    "three.js",
+    "kicad",
+    "pcb",
+    "modbus",
+    "simulation"
+  ]
+}
