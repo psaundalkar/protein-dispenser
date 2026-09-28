@@ -16,9 +16,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/dashboard", "destination": "/index.html" },
-    { "source": "/view3d", "destination": "/three/index.html" },
-    { "source": "/wiring", "destination": "/wiring.html" },
-    { "source": "/schematic", "destination": "/schematic.html" }
+    { "source": "/dashboard", "destination": "/index" },
+    { "source": "/view3d", "destination": "/three/index" }
   ]
 }
