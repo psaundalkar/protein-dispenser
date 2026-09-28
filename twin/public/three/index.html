@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Protein Dispenser &mdash; 3D Internal View</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121922; --panel2:#0d131a; --line:#22303f;
+    --txt:#dbe6f2; --dim:#7f93a8; --acc:#39d0a2; --acc2:#4aa8ff; --warn:#ffb454; --hot:#ff5f56;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);
+    font:13px/1.45 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
+  #app{display:grid;grid-template-columns:1fr 330px;height:100%}
+  #stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#16202b 0%,#080b0f 75%)}
+  canvas{display:block;width:100%;height:100%}
+
+  /* ---------- top toolbar ---------- */
+  #bar{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:8px;
+       align-items:center;flex-wrap:wrap;pointer-events:none;z-index:5}
+  .grp{display:flex;gap:4px;background:rgba(13,19,26,.86);border:1px solid var(--line);
+       border-radius:10px;padding:5px;backdrop-filter:blur(8px);pointer-events:auto}
+  .grp>span{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+       align-self:center;padding:0 6px 0 4px}
+  button{font:inherit;color:var(--txt);background:#1a2531;border:1px solid var(--line);
+       border-radius:7px;padding:6px 11px;cursor:pointer;transition:.15s}
+  button:hover{background:#243343;border-color:#33465a}
+  button.on{background:var(--acc);color:#04231a;border-color:var(--acc);font-weight:600}
+  button.on.blue{background:var(--acc2);color:#03192e;border-color:var(--acc2)}
+  #hint{position:absolute;bottom:12px;left:12px;color:var(--dim);font-size:11.5px;
+       background:rgba(13,19,26,.8);border:1px solid var(--line);border-radius:8px;padding:7px 11px;z-index:5}
+
+  /* ---------- legend ---------- */
+  #legend{position:absolute;bottom:12px;right:352px;display:flex;flex-direction:column;gap:5px;
+       background:rgba(13,19,26,.86);border:1px solid var(--line);border-radius:10px;padding:9px 11px;z-index:5}
+  .lg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--dim)}
+  .sw{width:11px;height:11px;border-radius:3px;border:1px solid rgba(255,255,255,.18)}
+
+  /* ---------- side panel ---------- */
+  #side{border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;padding:14px}
+  h2{margin:0 0 4px;font-size:15px;letter-spacing:.01em}
+  h3{margin:18px 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim)}
+  .sub{color:var(--dim);font-size:11.5px;margin-bottom:12px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12px;margin-bottom:4px}
+  .kv b{color:var(--dim);font-weight:500}
+  .bar{height:6px;background:#1b2531;border-radius:4px;overflow:hidden;margin:5px 0 9px}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .4s}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px;margin-bottom:8px}
+  .row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;font-size:12px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#37475a;display:inline-block;
+       margin-right:7px;vertical-align:middle;transition:.2s}
+  .dot.on{background:var(--acc);box-shadow:0 0 8px var(--acc)}
+  .dot.heat{background:var(--hot);box-shadow:0 0 8px var(--hot)}
+  #sel .name{font-size:14px;font-weight:600;margin-bottom:2px}
+  #sel .desc{font-size:11.5px;color:var(--dim);margin-bottom:8px}
+  .empty{color:var(--dim);font-size:12px;font-style:italic}
+  .evt{font-size:11px;color:var(--dim);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+       padding:2px 0;border-bottom:1px solid #16202b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .evt b{color:var(--acc2);font-weight:600}
+  .tagline{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;
+       background:#1b2531;border:1px solid var(--line);color:var(--dim);margin:0 4px 4px 0}
+  @media (max-width:880px){ #app{grid-template-columns:1fr} #side{position:absolute;right:0;top:0;
+       bottom:0;width:300px;z-index:9} #legend{display:none} }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="bar">
+      <div class="grp">
+        <span>View</span>
+        <button id="v-explode">Explode</button>
+        <button id="v-xray" class="blue">X-ray skin</button>
+        <button id="v-door">Door</button>
+        <button id="v-flow">Flow</button>
+      </div>
+      <div class="grp">
+        <span>Focus</span>
+        <button data-focus="electrical">Electrical</button>
+        <button data-focus="thermal">Thermal</button>
+        <button data-focus="powder">Powder</button>
+        <button data-focus="all" class="on">All</button>
+      </div>
+      <div class="grp">
+        <span>Labels</span>
+        <button id="v-labels" class="on">On</button>
+      </div>
+    </div>
+    <div id="legend">
+      <div class="lg"><i class="sw" style="background:#2ea36f"></i>energised / running</div>
+      <div class="lg"><i class="sw" style="background:#e8590c"></i>heater / hot</div>
+      <div class="lg"><i class="sw" style="background:#2b7fd4"></i>cold loop</div>
+      <div class="lg"><i class="sw" style="background:#8a94a6"></i>at rest</div>
+    </div>
+    <div id="hint">drag = orbit &nbsp;·&nbsp; scroll = zoom &nbsp;·&nbsp; right-drag = pan &nbsp;·&nbsp; click a part to identify</div>
+  </div>
+
+  <aside id="side">
+    <h2>3D Internal View</h2>
+    <div class="sub">Every part inside the cabinet, driven by the live twin.</div>
+
+    <div id="sel" class="card">
+      <div class="empty">Click any component in the 3D view to identify it.</div>
+    </div>
+
+    <h3>Powder hoppers</h3>
+    <div id="hoppers"></div>
+
+    <h3>Relay bank &mdash; 8 ch</h3>
+    <div class="card" id="relays"></div>
+
+    <h3>Thermal loop</h3>
+    <div class="card" id="thermal"></div>
+
+    <h3>Power</h3>
+    <div class="card" id="power"></div>
+
+    <h3>Event log</h3>
+    <div id="events"></div>
+  </aside>
+</div>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module" src="/three/view3d.js?v=2"></script>
+</body>
+</html>

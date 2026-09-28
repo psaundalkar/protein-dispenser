@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Protein Dispenser &mdash; Digital Twin</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="dot" id="link"></div>
+    <h1>Protein Dispenser <span>&mdash; Digital Twin</span></h1>
+  </div>
+  <div class="hstats">
+    <a class="hs" href="/three/index.html" style="text-decoration:none;color:inherit;border:1px solid #2b3a4a;border-radius:8px;padding:6px 12px">Open 3D internal view &rarr;</a>
+    <div class="hs"><label>State</label><b id="h-state">BOOT</b></div>
+    <div class="hs"><label>Draw</label><b id="h-watts">0 W</b></div>
+    <div class="hs"><label>Cups today</label><b id="h-cups">0</b></div>
+    <div class="hs"><label>Revenue</label><b id="h-rev">&#8377;0</b></div>
+  </div>
+</header>
+
+<main>
+  <!-- ================= MACHINE CUTAWAY ================= -->
+  <section class="cabinet">
+    <div class="cab-head">
+      <h2>Machine cutaway</h2>
+      <span class="hint">live actuator / flow state</span>
+    </div>
+
+    <div class="cutaway">
+      <!-- hoppers -->
+      <div class="row hoppers">
+        <div class="hopper" data-h="0"><div class="fill"></div><span class="lbl">Whey</span><div class="auger">AU1</div></div>
+        <div class="hopper" data-h="1"><div class="fill"></div><span class="lbl">Cocoa</span><div class="auger">AU2</div></div>
+        <div class="hopper" data-h="2"><div class="fill"></div><span class="lbl">Creatine</span><div class="auger">AU3</div></div>
+        <div class="hopper" data-h="3"><div class="fill"></div><span class="lbl">Oats</span><div class="auger">AU4</div></div>
+        <div class="hopper" data-h="4"><div class="fill"></div><span class="lbl">Vitamin</span><div class="auger">AU5</div></div>
+      </div>
+
+      <div class="row chute">
+        <div class="chute-line"></div>
+        <div class="station">
+          <div class="mixer" id="mixer"><span>Mixer head</span></div>
+          <div class="cup" id="cup">CUP</div>
+          <div class="turntable" id="turntable"><span>turntable</span></div>
+          <div class="gate" id="gate">gate</div>
+        </div>
+      </div>
+
+      <div class="row fluids">
+        <div class="fluid hot" id="boiler">
+          <div class="cap">Hot water boiler &middot; SSR-25DA</div>
+          <div class="temp" id="boiler-t">--.- &deg;C</div>
+          <div class="bar"><i id="boiler-bar"></i></div>
+          <div class="heater" id="heater">HEATER</div>
+          <div class="valve" id="v-hot">V&#8321; hot</div>
+        </div>
+        <div class="fluid cold" id="chiller">
+          <div class="cap">Chiller bath &middot; compressor</div>
+          <div class="temp" id="chiller-t">--.- &deg;C</div>
+          <div class="bar"><i id="chiller-bar"></i></div>
+          <div class="comp" id="comp">COMP</div>
+          <div class="fan" id="fan">FAN</div>
+          <div class="valve" id="v-cold">V&#8322; cold</div>
+        </div>
+        <div class="tanks">
+          <div class="tank"><div class="tfill" id="tank-fill"></div><span id="tank-l">17.5 L</span></div>
+          <div class="tank waste"><div class="tfill" id="waste-fill"></div><span id="waste-l">5%</span></div>
+          <div class="tank-lbl">water in &middot; waste</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SIDE PANELS ================= -->
+  <div class="col">
+    <!-- control cabinet -->
+    <section class="panel">
+      <h2>Control cabinet <span class="hint">relays &amp; rails</span></h2>
+      <div class="relays" id="relays"></div>
+      <div class="rails">
+        <div class="rail" id="rail12"><span>LRS-100-12</span><b id="rail12-i">0.00 A</b><i id="rail12-b"></i></div>
+        <div class="rail" id="rail24"><span>LRS-100-24</span><b id="rail24-i">0.00 A</b><i id="rail24-b"></i></div>
+      </div>
+      <div class="gpio">
+        <div class="gio" id="g-cup">cup sensor</div>
+        <div class="gio" id="g-door">door switch</div>
+      </div>
+    </section>
+
+    <!-- hopper levels -->
+    <section class="panel">
+      <h2>Hopper inventory</h2>
+      <div class="levels" id="levels"></div>
+    </section>
+
+    <!-- charts -->
+    <section class="panel">
+      <h2>Telemetry</h2>
+      <canvas id="chart-temp" width="360" height="120"></canvas>
+      <canvas id="chart-power" width="360" height="120"></canvas>
+    </section>
+  </div>
+
+  <!-- ================= OPERATOR CONTROLS ================= -->
+  <div class="col">
+    <section class="panel">
+      <h2>Order</h2>
+      <div class="products" id="products"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Operator controls</h2>
+      <div class="btns">
+        <button id="btn-power" class="primary">Power off</button>
+        <button id="btn-maint">Maintenance mode</button>
+        <button id="btn-refill">Refill / reset stock</button>
+        <button id="btn-door">Toggle door</button>
+        <button id="btn-fault" class="danger">Inject fault</button>
+        <button id="btn-clear" class="danger">Clear fault</button>
+      </div>
+      <p class="note">Refill and fault-clearing mirror the real service menu. Door switch is interlocked with dispensing.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Event log</h2>
+      <div class="log" id="log"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Subsystems <span class="hint">as identified in the assets</span></h2>
+      <ul class="inv">
+        <li><b>5&times; auger hoppers</b> &mdash; geared 12 V DC motors, volumetric dosing (&asymp;3.1 g/rev calibrated)</li>
+        <li><b>Cup dispenser</b> &mdash; solenoid + turntable indexing, cup-present microswitch</li>
+        <li><b>Mixer head</b> &mdash; in-cup blending, stainless block over the cup station</li>
+        <li><b>Hot water</b> &mdash; boiler tank, 240 V element via Fotek SSR-25DA, dispensing solenoid</li>
+        <li><b>Cold water</b> &mdash; vapour-compression loop: compressor &rarr; condenser &rarr; capillary &rarr; evaporator bath, condenser fan</li>
+        <li><b>Water supply</b> &mdash; 2&times;20 L jugs, silicone tubing, check + solenoid valves</li>
+        <li><b>Control</b> &mdash; Hefronics RS485/Modbus board, 8-ch BESTEP relay board, 8-ch DIP delay module, 5 top actuator boxes</li>
+        <li><b>Power</b> &mdash; Mean Well LRS-100-12 (8.5 A) &amp; LRS-100-24 (4.5 A), LM2596S buck</li>
+        <li><b>HMI</b> &mdash; Android touchscreen kiosk (A8PRTC25080527) + order app</li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<footer>
+  Twin of the observed machine &middot; model = physics-lite + state machine &middot;
+  swap <code>twin/io.js</code> for Modbus/MQTT to bind to real hardware.
+</footer>
+
+<script src="demo-products.js" onerror="void 0"></script>
+<script src="app.js"></script>
+</body>
+</html>
